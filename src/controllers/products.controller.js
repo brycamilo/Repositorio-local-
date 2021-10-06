@@ -1,29 +1,108 @@
 const Product = require('../models/product');
 const productCtrl = {}
 
-productCtrl.getAll = (req,res) =>
+
+productCtrl.getOne = async (req,res) =>
 {
-    var products = [{
-        name:"Product1",
-    },
+    try
     {
-        name:"Product2"
-    }]
-    res.json(products)
+        var id = req.params.id;
+        var product = await Product.findById(id);
+        res.json(product)
+    }
+    catch(err)
+    {
+        console.log(err);
+        return res.json(err);
+    }
+
+    
+}
+
+productCtrl.getAll = async (req,res) =>
+{
+    try
+    {
+        var products = await Product.find();
+        res.json(products)
+    }
+    catch(err)
+    {
+        console.log(err);
+        return res.json(err);
+    }
+
+    
 }
 
 productCtrl.createOne = async (req,res) =>
 {
-    var productData = req.body;
+    try
+    {
+        var productData = req.body;
     
-    var product = new Product(productData);
+        var product = new Product(productData);
+    
+       await product.save();
 
-   await product.save();
-   //1. Crear producto en la base de datos
+     res.json({msg:" Product created"})
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        return res.json(err);
+    }
    
+   
+ 
 
-   res.json({msg:" Product created"})
-   //2. Dar respuesta que se añadio correctamente
+}
+
+productCtrl.updateOne = async (req,res) =>
+{
+    try
+    {
+        var data = req.body;
+        var id = req.params.id;
+        await  Product.findByIdAndUpdate(id,data)
+
+        res.json({msg:"Product updated"});
+
+    
+    }
+    catch(err)
+    {
+        console.log(err);
+        return res.json(err);
+    }
+   
+   
+ 
+
+}
+productCtrl.deleteOne = async (req,res) =>
+{
+    try
+    {
+        var id = req.params.id;
+
+        await  Product.findByIdAndDelete(id)
+      
+
+        res.json({msg:"Product deleted"});
+
+    
+    }
+    catch(err)
+    {
+        console.log(err);
+        return res.json(err);
+    }
+   
+   
+ 
+
 }
 
 module.exports = productCtrl;
